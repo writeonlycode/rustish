@@ -6,8 +6,9 @@ use crate::{
 };
 
 pub fn run_external_program(name: &str, arguments: &[&str]) -> Result<Outcome, error::Error> {
-    let path = which::which(name).map_err(|_| CommandNotFound(name.to_string()))?;
-    let _ = process::Command::new(path)
+    let _path = which::which(name).map_err(|_| CommandNotFound(name.to_string()))?;
+
+    let _ = process::Command::new(name)
         .args(arguments)
         .status()
         .map_err(|source| error::Error::Io {
