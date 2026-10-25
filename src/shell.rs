@@ -52,9 +52,9 @@ fn read_line() -> io::Result<Option<String>> {
 }
 
 fn execute_line(command: &str, arguments: &[&str]) -> Result<outcome::Outcome, error::Error> {
-    match commands::execute(command, &arguments) {
+    match commands::execute(command, arguments) {
         Some(result) => result,
-        None => executor::run_external_program(command, &arguments),
+        None => executor::run_external_program(command, arguments),
     }
 }
 
