@@ -6,4 +6,4 @@ mod parser;
 mod shell;
 
 pub use error::Error;
-pub use shell::run;
+pub use shell::Shell;
