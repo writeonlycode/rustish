@@ -33,17 +33,13 @@ impl Builtin {
     }
 }
 
-pub fn execute(
-    command: &str,
-    arguments: &[&str],
-    current_dir: &std::path::PathBuf,
-) -> Option<Result<Outcome, Error>> {
+pub fn execute(command: &str, arguments: &[&str]) -> Option<Result<Outcome, Error>> {
     let command = Builtin::from_name(command)?;
 
     match command {
         Builtin::Echo => Some(echo::run(arguments)),
         Builtin::Exit => Some(exit::run(arguments)),
-        Builtin::Pwd => Some(pwd::run(current_dir)),
+        Builtin::Pwd => Some(pwd::run()),
         Builtin::Type => Some(type_builtin::run(arguments)),
     }
 }

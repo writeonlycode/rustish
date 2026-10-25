@@ -1,12 +1,7 @@
-use std::{env, process::ExitCode};
-
-use rustish::Shell;
+use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    let pwd = env::current_dir().unwrap();
-    let shell = Shell::new(pwd);
-
-    match shell.run() {
+    match rustish::run() {
         Ok(code) => ExitCode::from(code),
         Err(error) => {
             eprintln!("{error}");
