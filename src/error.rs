@@ -22,7 +22,7 @@ pub enum Error {
     #[error("{context}: {message}")]
     Cd {
         context: String,
-        message: String,
+        message: &'static str,
         source: std::io::Error,
     },
 }

@@ -17,7 +17,7 @@ pub fn run() -> Result<Outcome, error::Error> {
     })?;
 
     stdout.flush().map_err(|source| error::Error::Io {
-        context: "echo".to_string(),
+        context: "pwd".to_string(),
         source,
     })?;
 
