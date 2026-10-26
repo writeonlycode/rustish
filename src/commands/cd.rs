@@ -9,16 +9,25 @@ pub fn run(arguments: &[&str]) -> Result<Outcome, error::Error> {
         return Ok(Outcome::Continue);
     };
 
-    let path = Path::new(argument);
+    if argument == &"~" {
+        let path = std::env::home_dir().unwrap();
 
-    std::env::set_current_dir(path).map_err(|e| error::Error::Cd {
-        context: format!("cd: {}", path.display()),
-        message: match e.kind() {
-            io::ErrorKind::NotFound => "No such file or directory".to_string(),
-            _ => e.to_string(),
-        },
-        source: e,
-    })?;
+        std::env::set_current_dir(path.as_path()).map_err(|e| error::Error::Io {
+            context: format!("cd: {}", path.display()),
+            source: e,
+        })?;
+    } else {
+        let path = Path::new(argument);
+
+        std::env::set_current_dir(path).map_err(|e| error::Error::Cd {
+            context: format!("cd: {}", path.display()),
+            message: match e.kind() {
+                io::ErrorKind::NotFound => "No such file or directory".to_string(),
+                _ => e.to_string(),
+            },
+            source: e,
+        })?;
+    }
 
     Ok(Outcome::Continue)
 }
