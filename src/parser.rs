@@ -2,6 +2,7 @@ enum State {
     Unquoted,
     SingleQuoted,
     DoubleQuoted,
+    UnquotedBackslash,
 }
 
 pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
@@ -11,11 +12,15 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
 
     for c in line.chars() {
         match state {
+            // Unquoted States
             State::Unquoted if c.is_single_quote() => {
                 state = State::SingleQuoted;
             }
             State::Unquoted if c.is_double_quote() => {
                 state = State::DoubleQuoted;
+            }
+            State::Unquoted if c.is_backslash() => {
+                state = State::UnquotedBackslash;
             }
             State::Unquoted if c.is_whitespace() => {
                 if !current.is_empty() {
@@ -26,6 +31,7 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
                 current.push(c);
             }
 
+            // Single Quote States
             State::SingleQuoted if c.is_single_quote() => {
                 state = State::Unquoted;
             }
@@ -33,11 +39,18 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
                 current.push(c);
             }
 
+            // Double Quote States
             State::DoubleQuoted if c.is_double_quote() => {
                 state = State::Unquoted;
             }
             State::DoubleQuoted => {
                 current.push(c);
+            }
+
+            // Backslash States
+            State::UnquotedBackslash => {
+                current.push(c);
+                state = State::Unquoted;
             }
         }
     }
@@ -56,6 +69,7 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
 trait CharExt {
     fn is_single_quote(&self) -> bool;
     fn is_double_quote(&self) -> bool;
+    fn is_backslash(&self) -> bool;
 }
 
 impl CharExt for char {
@@ -65,5 +79,9 @@ impl CharExt for char {
 
     fn is_double_quote(&self) -> bool {
         *self == '\"'
+    }
+
+    fn is_backslash(&self) -> bool {
+        *self == '\\'
     }
 }
