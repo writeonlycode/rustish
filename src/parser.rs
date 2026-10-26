@@ -1,6 +1,7 @@
 enum State {
     Unquoted,
     SingleQuoted,
+    DoubleQuoted,
 }
 
 pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
@@ -12,6 +13,9 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
         match state {
             State::Unquoted if c.is_single_quote() => {
                 state = State::SingleQuoted;
+            }
+            State::Unquoted if c.is_double_quote() => {
+                state = State::DoubleQuoted;
             }
             State::Unquoted if c.is_whitespace() => {
                 if !current.is_empty() {
@@ -26,6 +30,13 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
                 state = State::Unquoted;
             }
             State::SingleQuoted => {
+                current.push(c);
+            }
+
+            State::DoubleQuoted if c.is_double_quote() => {
+                state = State::Unquoted;
+            }
+            State::DoubleQuoted => {
                 current.push(c);
             }
         }
@@ -44,10 +55,15 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
 
 trait CharExt {
     fn is_single_quote(&self) -> bool;
+    fn is_double_quote(&self) -> bool;
 }
 
 impl CharExt for char {
     fn is_single_quote(&self) -> bool {
         *self == '\''
+    }
+
+    fn is_double_quote(&self) -> bool {
+        *self == '\"'
     }
 }
