@@ -3,6 +3,7 @@ enum State {
     SingleQuoted,
     DoubleQuoted,
     UnquotedBackslash,
+    DoubleQuotedBackslash,
 }
 
 pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
@@ -10,7 +11,9 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
     let mut current = String::new();
     let mut tokens = Vec::new();
 
-    for c in line.chars() {
+    let mut characters = line.chars().peekable();
+
+    while let Some(c) = characters.next() {
         match state {
             // Unquoted States
             State::Unquoted if c.is_single_quote() => {
@@ -43,6 +46,14 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
             State::DoubleQuoted if c.is_double_quote() => {
                 state = State::Unquoted;
             }
+            State::DoubleQuoted if c.is_backslash() => match characters.peek() {
+                Some(n) if n.is_backslash() || n.is_double_quote() => {
+                    state = State::DoubleQuotedBackslash;
+                }
+                _ => {
+                    current.push(c);
+                }
+            },
             State::DoubleQuoted => {
                 current.push(c);
             }
@@ -51,6 +62,10 @@ pub fn parse(line: &str) -> Option<(String, Vec<String>)> {
             State::UnquotedBackslash => {
                 current.push(c);
                 state = State::Unquoted;
+            }
+            State::DoubleQuotedBackslash => {
+                current.push(c);
+                state = State::DoubleQuoted;
             }
         }
     }
