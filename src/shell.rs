@@ -25,7 +25,9 @@ pub fn run() -> Result<u8, error::Error> {
             continue;
         };
 
-        match execute_line(command, &arguments) {
+        let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+
+        match execute_line(&command, &arguments) {
             Ok(outcome::Outcome::Continue) => {}
             Ok(outcome::Outcome::Exit(code)) => break Ok(code),
             Err(error) => report_command_error(error),
@@ -52,9 +54,9 @@ fn read_line() -> io::Result<Option<String>> {
 }
 
 fn execute_line(command: &str, arguments: &[&str]) -> Result<outcome::Outcome, error::Error> {
-    match commands::execute(command, &arguments) {
+    match commands::execute(command, arguments) {
         Some(result) => result,
-        None => executor::run_external_program(command, &arguments),
+        None => executor::run_external_program(command, arguments),
     }
 }
 

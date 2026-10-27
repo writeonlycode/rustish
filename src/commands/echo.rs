@@ -1,6 +1,5 @@
-use std::io::{self, Write};
-
 use crate::{error, outcome::Outcome};
+use std::io::{self, Write};
 
 pub fn run(arguments: &[&str]) -> Result<Outcome, error::Error> {
     let s = arguments.join(" ");

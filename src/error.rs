@@ -18,4 +18,11 @@ pub enum Error {
         context: String,
         source: std::io::Error,
     },
+
+    #[error("{context}: {message}")]
+    Cd {
+        context: String,
+        message: &'static str,
+        source: std::io::Error,
+    },
 }
